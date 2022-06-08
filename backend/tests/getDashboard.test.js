@@ -1,5 +1,7 @@
+require("dotenv");
 const app = require("../app");
 const mockserver = require("supertest");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { startDb, stopDb, deleteAll } = require("./util/inMemoryDb");
 
@@ -26,10 +28,10 @@ describe("/api/dashboards GET tests", () => {
     const newUser = new User({
       username: "Macska",
       email: "ggg@ggg.gg",
-      googleId: "12345",
     });
     await newUser.save();
-    client.set("authorization", newUser._id);
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
+    client.set("authorization", token);
 
     //when
     const response = await client.get("/api/dashboards");
@@ -46,11 +48,10 @@ describe("/api/dashboards GET tests", () => {
     const newUser = new User({
       username: "Macska",
       email: "ggg@ggg.gg",
-      googleId: "12345",
     });
     await newUser.save();
-
-    client.set("authorization", newUser._id);
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET);
+    client.set("authorization", token);
     await User.deleteMany();
 
     //when

@@ -1,7 +1,8 @@
 const express = require("express");
+require("express-async-errors");
 const cors = require("cors");
+const morgan = require("morgan");
 
-const { logger } = require("./middlewares/logger");
 const { auth } = require("./middlewares/auth");
 const { errorHandler } = require("./middlewares/errorHandler");
 const dashboardRoutes = require("./routes/dashboard");
@@ -16,7 +17,10 @@ app.use(
 );
 app.use(express.json());
 
-app.use(logger);
+app.use(
+  morgan("tiny")
+  //morgan(":method :url :status :res[content-length] - :response-time ms")
+);
 
 app.use("/api/dashboards", dashboardRoutes);
 app.use("/api/user", userRoutes);
@@ -27,13 +31,13 @@ app.get("/api/public", (req, res) => {
 });
 app.get("/api/private", auth({ block: true }), (req, res) => {
   console.log("private");
-  res.send(`Hello Private world, your user id is: ${res.locals.userId} !`);
+  res.send(`Hello Private world, your user id is: ${res.locals.user.userId} !`);
 });
 app.get("/api/prublic", auth({ block: false }), (req, res) => {
   console.log("private");
   if (!res.locals.userId)
     return res.send("Hello Prublic World, you're not logged in ! ");
-  res.send(`Hello Prublic World, your user id is: ${res.locals.userId} !`);
+  res.send(`Hello Prublic World, your user id is: ${res.locals.user.userId} !`);
 });
 
 app.use(errorHandler);
