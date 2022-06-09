@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const httpModule = require("../utils/http");
 const http = httpModule();
+const auth = require("../middlewares/auth");
 
 const config = {
   google: {
@@ -30,7 +31,7 @@ const config = {
   }, */
 };
 
-router.post("/login", async (req, res) => {
+router.post("/login", auth({ block: false }), async (req, res) => {
   const payload = req.body;
   if (!payload) return res.status(400).send("All inputs are required 1");
 
@@ -85,11 +86,32 @@ router.post("/login", async (req, res) => {
 
   //megkeresi a user-t, ha nincs csinál egyet:
   const key = "providers." + provider;
-  const user = await User.findOneAndUpdate(
-    { [key]: openId },
-    { providers: { [provider]: openId } },
-    { new: true, upsert: true }
+  let user = await User.findOne({ [key]: openId });
+  if (user && res.locals.user?.providers) {
+    user.providers = {
+      ...user.providers,
+      ...res.locals.user.providers,
+    };
+    user = await user.save();
+  }
+  // user?._id conditionl chaining === user ? user._id : null
+  const sessionToken = jwt.sign(
+    {
+      userId: user?._id,
+      providers: user ? user.providers : { [provider]: openId },
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
   );
+  res.json({ sessionToken });
+});
+
+router.post("/create", auth({ block: true }), async (req, res) => {
+  if (req.body?.username) return res.sendStatus(400);
+  const user = await User.create({
+    username: req.body.username,
+    providers: res.locals.user.providers,
+  });
   const sessionToken = jwt.sign(
     { userId: user._id, providers: user.providers },
     process.env.JWT_SECRET,
