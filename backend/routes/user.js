@@ -73,8 +73,8 @@ router.post("/login", async (req, res) => {
         },
       }
     );
-    if (!response) return res.sendStatus(500);
-    if (response.status !== 200) return res.sendStatus(401);
+    if (!userResponse) return res.sendStatus(500);
+    if (userResponse.status !== 200) return res.sendStatus(401);
     const id = config[provider].user_id;
     openId = userResponse.data[id];
   } else {
