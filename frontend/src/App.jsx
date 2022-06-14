@@ -1,21 +1,21 @@
-import NumberPresenter from "./components/NumberPresenter";
-import NumberModifier from "./components/NumberModifier";
-import { useCounter } from "./components/CounterProvider";
 import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Profile from "./pages/Profile";
+import Navbar from "./components/Navbar";
 
 function App() {
-  const { value, plus, minus } = useCounter();
-
   return (
     <>
       <div className="App">
-        <p>Change the value</p>
-        <p>Value: {value}</p>
-        <button onClick={plus}>+</button>
-        <button onClick={minus}>-</button>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
       </div>
-      <NumberPresenter />
-      <NumberModifier />
     </>
   );
 }

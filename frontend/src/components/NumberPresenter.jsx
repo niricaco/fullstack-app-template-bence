@@ -2,11 +2,11 @@ import React from "react";
 import { useCounter } from "./CounterProvider";
 
 const NumberPresenter = () => {
-  const { value } = useCounter();
+  const { counter } = useCounter();
   return (
     <>
       <div>NumberPresenter</div>
-      <p>Value: {value}</p>
+      <p>Value: {counter}</p>
     </>
   );
 };

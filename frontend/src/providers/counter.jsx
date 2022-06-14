@@ -6,11 +6,11 @@ import { useContext } from "react";
 const CounterContext = createContext();
 
 const CounterProvider = ({ children }) => {
-  const [value, setValue] = useState(0);
-  const plus = () => setValue(value + 1);
-  const minus = () => setValue(value - 1);
+  const [counter, setCounter] = useState(0);
+  const increment = () => setCounter(counter + 1);
+  const decrement = () => setCounter(counter - 1);
 
-  const contextValue = { value, plus, minus };
+  const contextValue = { counter, increment, decrement };
 
   return (
     <CounterContext.Provider value={contextValue}>
