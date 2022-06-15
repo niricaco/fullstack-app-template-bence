@@ -5,16 +5,17 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { CounterProvider } from "./providers/counter";
+import { AuthProvider } from "./providers/auth";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  <AuthProvider>
     <CounterProvider>
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </CounterProvider>
-  </React.StrictMode>
+  </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
