@@ -10,6 +10,7 @@ const Profile = () => {
     increment: globalIncrement,
     decrement: globalDecrement,
   } = useGlobalCounter();
+
   const { token } = useAuth();
 
   return (

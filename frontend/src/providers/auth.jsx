@@ -1,13 +1,18 @@
 import React from "react";
-import http from "axios";
 import { useState } from "react";
 import { createContext } from "react";
 import { useContext } from "react";
+import { useEffect } from "react";
+import http from "axios";
+import jwt_decode from "jwt-decode";
+import { toDoApi } from "../api/toDoApi";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(0);
+  const [user, setUser] = useState(null);
+  const { post } = toDoApi();
 
   const auth = () => {
     const googleBaseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -34,16 +39,38 @@ const AuthProvider = ({ children }) => {
         provider: provider,
       });
       setToken(response.data.sessionToken);
+      localStorage.setItem("sessionToken", response.data.sessionToken);
+      setUser(jwt_decode(response.data.sessionToken));
     } catch (error) {
+      console.log(error);
       setToken(null);
+      localStorage.removeItem("sessionToken");
+    }
+  };
+
+  const register = async (username) => {
+    const response = await post("/user/create", { username });
+    if (response?.status === 200) {
+      setToken(response.data.sessionToken);
+      localStorage.setItem("sessionToken", response.data.sessionToken);
+      setUser(jwt_decode(response.data.sessionToken));
     }
   };
 
   const logout = () => {
     setToken(null);
+    localStorage.removeItem("sessionToken");
   };
 
-  const contextValue = { token, auth, login, logout };
+  useEffect(() => {
+    const tokenInStorage = localStorage.getItem("sessionToken");
+    if (tokenInStorage) {
+      setToken(tokenInStorage);
+      setUser(jwt_decode(tokenInStorage));
+    }
+  }, []);
+
+  const contextValue = { token, user, auth, login, logout, register };
 
   return (
     <>

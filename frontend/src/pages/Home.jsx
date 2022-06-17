@@ -2,6 +2,7 @@ import React from "react";
 import { useCounter } from "../hooks/useCounter";
 import { useCounter as useGlobalCounter } from "../providers/counter";
 import { useAuth } from "../providers/auth";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { counter, increment, decrement } = useCounter("Home");
@@ -25,7 +26,7 @@ const Home = () => {
       <button onClick={globalDecrement}>-</button>
 
       <div>
-        <button onClick={auth}>Login with Google</button>
+        {token ? "Welcome" : <button onClick={auth}>Login with Google</button>}
       </div>
     </>
   );
